@@ -1,122 +1,111 @@
-# import time
-# import re
-#
-# from selenium import webdriver
-# from selenium.webdriver.common.by import By
-#
-#
-# driver = webdriver.Chrome(executable_path="C:\\Users\\lolek\\chromedriver\\chromedriver.exe")
-# driver.get('https://orteil.dashnet.org/cookieclicker/')
-# driver.maximize_window()
-# cookies = driver.find_element(By.CLASS_NAME, value="fc-button-label")
-# cookies.click()
-# driver.implicitly_wait(60)
-# lang = driver.find_element(By.ID, value="langSelect-EN")
-# lang.click()
-# driver.implicitly_wait(60)
-# time.sleep(2)
-# BigCookie = driver.find_element(By.ID, value="bigCookie")
-# driver.implicitly_wait(60)
-# for _ in range(15):
-#     BigCookie.click()
-# cursor = driver.find_element(By.ID, value="product0")
-# cursor.click()
-# """
-# <div id="cookies" class="title">124.611<br>million cookies<div id="cookiesPerSecond">per second: 237,284</div></div>
-# """
-# # farm = driver.find_element(By.ID, value="product2")
-# # farm.click()
-# driver.implicitly_wait(1)
-# cookies_source = driver.find_element(By.ID, value="cookies")
-# pattern = r'<div id="cookies" class="title">([\d\.,]+)<br>([\w\s]+) cookies<div id="cookiesPerSecond">per second: ([\d\.,]+)<\/div><\/div>'
-# match = re.search(pattern, cookies_source.text)
-#
-# if match:
-#     cookies = int(float(match.group(1).replace(',', '')))
-#     attribute = match.group(2)
-#     cookies_per_second = int(match.group(3).replace(',', ''))
-#
-#     print("Cookies:", cookies)
-#     print("Attribute:", attribute)
-#     print("Cookies per second:", cookies_per_second)
-#
-#
-# driver.implicitly_wait(1)
-# cursor_cost = driver.find_element(By.ID, value="productPrice0")
-#
-# for _ in range(100):
-#     time.sleep(1)
-#     print('cookies: ', cookies)
-#     print('cookies.text[:-24]: ', cookies_source.text)
-#     print('cursor_cost.text: ', cursor_cost.text)
-#     for _ in range(30):
-#         BigCookie.click()
-#     if int(cursor_cost.text) <= int(cookies.text):
-#         print(f'cursor buy for {cursor_cost.text}')
-#         cursor.click()
-#
-# # for i in range(20):
-# #     products_names = driver.find_elements(By.ID, value=f"productName{i}")
-# #     print(products_names.text)
-# time.sleep(10)
-# driver.close()
-# """
-# <div id="cookies" class="title">334 cookies<div id="cookiesPerSecond">per second: 1</div></div>
-# """
-
 import time
-import re
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 
-cookies_value = None
-attribute = None
-cookies_per_second = None
-
 driver = webdriver.Chrome(executable_path="C:\\Users\\lolek\\chromedriver\\chromedriver.exe")
-driver.get('https://orteil.dashnet.org/cookieclicker/')
-driver.maximize_window()
-cookies = driver.find_element(By.CLASS_NAME, value="fc-button-label")
-cookies.click()
-driver.implicitly_wait(60)
-lang = driver.find_element(By.ID, value="langSelect-EN")
-lang.click()
-driver.implicitly_wait(60)
-time.sleep(2)
+
+
+def start():
+    driver.get('https://orteil.dashnet.org/cookieclicker/')
+    website_cookies = driver.find_element(By.CLASS_NAME, value="fc-button-label")
+    website_cookies.click()
+    driver.implicitly_wait(5)
+    lang = driver.find_element(By.ID, value="langSelect-EN")
+    lang.click()
+    driver.implicitly_wait(5)
+    return None
+
+
+start()
+time.sleep(1)
 BigCookie = driver.find_element(By.ID, value="bigCookie")
-driver.implicitly_wait(60)
-for _ in range(15):
-    BigCookie.click()
-cursor = driver.find_element(By.ID, value="product0")
-cursor.click()
 
-cookies_source = driver.find_element(By.CLASS_NAME, value="title")
-pattern = r'<div id="cookies" class="title">([\d\.,]+)\s*(million|billion|trillion)?\s*cookies.*?<div id="cookiesPerSecond">per second: ([\d\.,]+)<\/div>'
-match = re.search(pattern, cookies_source.text)
 
-if match:
-    cookies_value = int(float(match.group(1).replace(',', '')))
-    attribute = match.group(2)
-    cookies_per_second = int(match.group(3).replace(',', ''))
-
-    print("Cookies:", cookies_value)
-    print("Attribute:", attribute)
-    print("Cookies per second:", cookies_per_second)
-
-cursor_cost = driver.find_element(By.ID, value="productPrice0")
-
-for _ in range(10):
-    time.sleep(1)
-    if cookies_value is not None:
-        print('cookies_value:', cookies_value)
-    print('cursor_cost.text:', cursor_cost.text)
-    for _ in range(30):
+def first_buy():
+    for _ in range(110):
         BigCookie.click()
-    if cookies_value is not None and int(cursor_cost.text) <= cookies_value:
-        print(f'cursor buy for {cursor_cost.text}')
-        cursor.click()
+    local_cursor = driver.find_element(By.ID, value="product0")
+    local_cursor.click()
 
-time.sleep(10)
+
+first_buy()
+
+
+class Product:
+    def __init__(self, name: str = 'NoName', amount: int = 0, price: int = 1, cps: float = 0, boost: float = 0, click=None):
+        """
+        :param name: Product name as a string
+        :param amount: How much product is owned
+        :param price:  How much product cost
+        :param cps:  How many cookies per second it produces
+        :param boost: How much it boost other buildings in float
+        :param click: selenium WebElement object used to .click()
+        """
+        self.name = name
+        self.amount = amount
+        self.price = price
+        self.cps = cps
+        self.boost = boost
+        self.__click = click
+
+    def __str__(self):
+        return f"""
+name    {type(self.name)}{self.name}
+amount: {type(self.amount)}{self.amount}
+price:  {type(self.price)}{self.price}
+cps:    {type(self.cps)}{self.cps}
+boost:  {type(self.boost)}{self.boost}
+click_: {type(self.__click)}{self.__click}
+"""
+
+    def buy(self):
+        if self.price <= cookies_refresh()[0]:
+            print(f'{self.name} buy for {self.price}')
+            self.__click.click()
+
+    def production(self):
+        return self.amount + self.cps + self.boost
+
+
+products = driver.find_elements(By.CLASS_NAME, value="content")
+product_list = []
+product_dict = {}
+iteration = 0
+for product in products:
+    iteration += 1
+    list_ = product.text.split('\n')
+    if list_[0] != '???' and list_[0] != '':
+        product_list.append(Product(list_[0]))
+    product_dict.update({f'product{iteration}': list_})
+
+
+cursor = Product(
+    driver.find_element(By.ID, value="productName0").text,
+    int(driver.find_element(By.ID, value="productOwned0").text),
+    int(driver.find_element(By.ID, value="productPrice0").text),
+    click=driver.find_element(By.ID, value="product0"),
+    # driver.find_element(By.ID, value="productName0"),
+    # driver.find_element(By.ID, value="productName0"),
+)
+
+
+# def product_refresh():
+#     pass
+
+
+def cookies_refresh():
+    raw_cookies_source = driver.find_element(By.ID, value="cookies")
+    driver.implicitly_wait(5)
+    cookies_source = raw_cookies_source.text.replace(' cookies\nper second: ', ',').split(sep=',')
+    cookies = int(cookies_source[0].replace(',', ''))
+    cookies_per_second = float(cookies_source[1])
+    return [cookies, cookies_per_second]
+
+
+for i in product_list:
+    print(i)
+print(product_dict)
+
+time.sleep(1)
 driver.close()
-
